@@ -5,6 +5,8 @@ Exit code: 0 = no problem found, 1 = problem found, 2 = could not read.
 """
 import configparser
 import sys
+from pathlib import Path
+import stat
 
 
 def first_line(exc):
@@ -14,11 +16,30 @@ def first_line(exc):
     return line
 
 
+def regular_input(path):
+    """Reject links, reparse points, special files and hard-linked inputs.
+
+    This check is not a hostile-race guarantee. Keep the file/tree still.
+    """
+    path = Path(path).absolute()
+    if ".." in path.parts:
+        raise OSError("Parent-traversal input paths are not supported.")
+    for part in [*reversed(path.parents), path]:
+        info = part.lstat()
+        if stat.S_ISLNK(info.st_mode) or getattr(info, 'st_file_attributes', 0) & 0x400:
+            raise OSError("Links/reparse points are not supported.")
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or info.st_nlink > 1:
+        raise OSError("Input must be an ordinary, singly linked regular file.")
+    return path
+
+
 def check(path):
+    path = regular_input(path)
     parser = configparser.ConfigParser()
     try:
         with open(path, encoding="utf-8-sig") as f:
-            parser.read_file(f, source=path)
+            parser.read_file(f, source=str(path))
     except UnicodeDecodeError:
         return {"error": {"kind": "UnicodeDecodeError", "line": None,
                           "message": "The file is not valid UTF-8 text."}}
@@ -28,6 +49,11 @@ def check(path):
     # Reading can pass while a value still cannot be used. The default reader
     # treats % as special, so ask for every value the way a program would.
     bad_values = []
+    for key in parser.defaults():
+        try:
+            parser.get(parser.default_section, key)
+        except configparser.Error as e:
+            bad_values.append((parser.default_section, key, type(e).__name__))
     for section in parser.sections():
         for key in parser.options(section):
             try:
