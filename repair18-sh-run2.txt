@@ -1,0 +1,94 @@
+### CMD: python --version
+Python 3.12.3
+### EXIT: 0
+
+### CMD: python make_sample.py
+Made sample/good.ini, nosection.ini, duplicate.ini and percent.ini
+### EXIT: 0
+
+### CMD: python make_sample.py
+Stopped: sample already exists. Nothing was replaced or deleted.
+### EXIT: 1
+
+### CMD: python -c "print(open('sample/duplicate.ini').read())"
+[app]
+name = Notes
+language = en
+Name = Notes 2
+
+### EXIT: 0
+
+### CMD: python inicheck.py sample/duplicate.ini
+Lines with an equals sign: 3
+### EXIT: 0
+
+### CMD: python inicheck.py sample/good.ini
+Sections: 2
+  [app] 2 settings
+  [backup] 2 settings
+No problems found by Python's reader. The file was not changed.
+That does not mean the settings are right for your program.
+### EXIT: 0
+
+### CMD: python inicheck.py sample/nosection.ini
+Could not read it: MissingSectionHeaderError on line 1
+Message: File contains no section headers.
+Only the first problem is shown. Fix it and run again.
+### EXIT: 1
+
+### CMD: python inicheck.py sample/duplicate.ini
+Could not read it: DuplicateOptionError on line 4
+Message: While reading from '/tmp/lesson18-record-sb58mgf2/sample/duplicate.ini' [line  4]: option 'name' in section 'app' already exists
+Only the first problem is shown. Fix it and run again.
+### EXIT: 1
+
+### CMD: python inicheck.py sample/percent.ini
+Sections: 1
+  [shop] 2 settings
+Cannot use the value of sale in [shop]: InterpolationSyntaxError
+A % in a value needs to be written as %% for Python's default reader.
+### EXIT: 1
+
+### CMD: python -m unittest -v
+test_default_only_bad_percent_is_reported (test_inicheck.DefaultValueChecks.test_default_only_bad_percent_is_reported) ... ok
+test_default_only_valid_value_passes (test_inicheck.DefaultValueChecks.test_default_only_valid_value_passes) ... ok
+test_duplicate_section (test_inicheck.Errors.test_duplicate_section) ... ok
+test_first_error_only (test_inicheck.Errors.test_first_error_only) ... ok
+test_folder_instead_of_file (test_inicheck.Errors.test_folder_instead_of_file) ... ok
+test_line_without_equals (test_inicheck.Errors.test_line_without_equals) ... ok
+test_missing_file (test_inicheck.Errors.test_missing_file) ... ok
+test_not_utf8 (test_inicheck.Errors.test_not_utf8) ... ok
+test_usage (test_inicheck.Errors.test_usage) ... ok
+test_directory_refused (test_inicheck.InputSafety.test_directory_refused) ... ok
+test_existing_and_dangling_file_symlinks_refused (test_inicheck.InputSafety.test_existing_and_dangling_file_symlinks_refused) ... ok
+test_fifo_refused_without_blocking (test_inicheck.InputSafety.test_fifo_refused_without_blocking) ... ok
+test_hardlink_refused_preserves_target (test_inicheck.InputSafety.test_hardlink_refused_preserves_target) ... ok
+test_parent_directory_symlink_refused (test_inicheck.InputSafety.test_parent_directory_symlink_refused) ... ok
+test_parent_traversal_refused (test_inicheck.InputSafety.test_parent_traversal_refused) ... ok
+test_self_loop_symlink_refused (test_inicheck.InputSafety.test_self_loop_symlink_refused) ... ok
+test_byte_order_mark_ok (test_inicheck.Passes.test_byte_order_mark_ok) ... ok
+test_comments_only (test_inicheck.Passes.test_comments_only) ... ok
+test_default_section_counted_separately (test_inicheck.Passes.test_default_section_counted_separately) ... ok
+test_double_percent_is_fine (test_inicheck.Passes.test_double_percent_is_fine) ... ok
+test_empty_file (test_inicheck.Passes.test_empty_file) ... ok
+test_more_than_five_bad_values (test_inicheck.Passes.test_more_than_five_bad_values) ... ok
+test_reference_to_missing_setting (test_inicheck.Passes.test_reference_to_missing_setting) ... ok
+test_references_to_other_settings (test_inicheck.Passes.test_references_to_other_settings) ... ok
+test_windows_line_endings (test_inicheck.Passes.test_windows_line_endings) ... ok
+test_bytes_and_time_unchanged (test_inicheck.ReadOnly.test_bytes_and_time_unchanged) ... ok
+test_no_new_files (test_inicheck.ReadOnly.test_no_new_files) ... ok
+test_cli_repeat_preserves_every_output (test_inicheck.SafeSetup.test_cli_repeat_preserves_every_output) ... ok
+test_existing_file_preserved (test_inicheck.SafeSetup.test_existing_file_preserved) ... ok
+test_existing_folder_preserves_nested_bytes_and_mtime (test_inicheck.SafeSetup.test_existing_folder_preserves_nested_bytes_and_mtime) ... ok
+test_repeat_preserves_every_output (test_inicheck.SafeSetup.test_repeat_preserves_every_output) ... ok
+test_duplicate_key_any_case (test_inicheck.Samples.test_duplicate_key_any_case) ... ok
+test_good (test_inicheck.Samples.test_good) ... ok
+test_no_section (test_inicheck.Samples.test_no_section) ... ok
+test_percent (test_inicheck.Samples.test_percent) ... ok
+test_sample_files (test_inicheck.Samples.test_sample_files) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 0.073s
+
+OK
+### EXIT: 0
