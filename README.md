@@ -6,7 +6,7 @@ A small read-only Python tool built step by step. Give it an .ini settings file 
 
     python make_sample.py                   # makes four made-up settings files in sample/
     python inicheck.py sample/duplicate.ini # report on one file
-    python -m unittest -v                   # twenty-three automated tests
+    python -m unittest -v                   # 36 temporary-fixture tests
 
 On Windows, if `python` is not found, use `py`.
 
@@ -27,3 +27,29 @@ On Windows, if `python` is not found, use `py`.
 - Tested only on small made-up files. Python 3.10 and 3.12 on Linux, and, by GitHub Actions, Python 3.12 on Windows and Ubuntu. Not tested on a Windows 10 or 11 desktop.
 - Educational example, no warranty. Use at your own risk.
 - Code is MIT licensed (see LICENSE). Python is a separate project with its own license; this repository does not include it.
+
+## Private repair, not published yet
+
+Setup now exclusively creates fictional files only in a NEW sample folder,
+refusing existing paths, parent traversal and linked/reparse parents. Partial
+new setup can remain after interruption: use a different new empty lesson folder
+rather than deleting old work. The checker refuses filesystem links/reparse
+points in input/ancestors, hardlinks, special entries and parent traversal before
+opening bytes. Keep the tree still: no hostile-race guarantee.
+
+The old checker missed DEFAULT-only interpolation failures. The private repair
+now asks for DEFAULT values too; two regression tests cover invalid lone-percent
+and valid escaped-percent defaults. Four setup and seven filesystem-input tests
+bring the total to36. Windows skips the Unix FIFO case; links may skip where
+unavailable. Local36tests and full replay pass; two Windows and two Ubuntu full replays pass36tests. Each platform pair
+differs only in unittest time and the unique temporary path in the expected
+duplicate-option error. Windows skips the Unix FIFO case; Ubuntu runs it.
+
+Resource use is not bounded: parsing can use memory/time on large/complex files.
+This is not a security sandbox. Error messages may expose source lines, values,
+keys, sections and paths. Keep private reports private. The code does not upload
+files, but cannot control cloud sync, telemetry or other software.
+
+https://docs.python.org/3/library/configparser.html
+https://docs.python.org/3/library/pathlib.html
+https://docs.python.org/3/library/stat.html
